@@ -26,7 +26,7 @@ trait PrinterTrait
     /**
      * @var int
      */
-    private $maxClassNameLength = 50;
+    private $maxClassNameLength = 200;
     /**
      * @var int
      */
