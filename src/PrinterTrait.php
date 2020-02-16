@@ -157,12 +157,6 @@ trait PrinterTrait
             $version = $this->version();
             $name    = $this->packageName();
             echo PHP_EOL;
-            if ($use_color !== 'never') {
-                echo $this->colorsTool->green() . "${name} ${version} by Codedungeon and contributors." . PHP_EOL;
-                echo $this->colorsTool->reset();
-            } else {
-                echo "${name} ${version} by Codedungeon and contributors." . PHP_EOL;
-            }
 
             if ($this->showConfig) {
                 $home     = getenv('HOME');
