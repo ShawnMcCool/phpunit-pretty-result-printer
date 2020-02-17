@@ -5,6 +5,7 @@ options:
   cd-printer-hide-namespace: false
   cd-printer-anybar: false
   cd-printer-anybar-port: 1738
+  max-class-name-length: 120
 markers:
   cd-pass: "✔ "
   cd-fail: "✖ "
