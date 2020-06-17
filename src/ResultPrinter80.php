@@ -160,7 +160,7 @@ if ($low && $high) {
                 $color  = '34';
                 $marker = 'incomplete';
             } elseif (strpos($type, 'risky') !== false) {
-                $color  = '35';
+                $color  = '207';
                 $marker = 'risky';
             } elseif (strpos($type, 'skipped') !== false) {
                 $color  = '33';
