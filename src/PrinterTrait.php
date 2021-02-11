@@ -68,6 +68,15 @@ trait PrinterTrait
      */
     private $defaultMarkers = [];
 
+    private $anyBarEnabled = false;
+
+    private $anyBarPort = null;
+
+    /**
+     * @var bool
+     */
+    private $dontFormatClassName;
+
     /**
      * {@inheritdoc}
      */
@@ -136,6 +145,14 @@ trait PrinterTrait
     /**
      * @return string
      */
+    public function getVersion()
+    {
+        return $this->version();
+    }
+
+    /**
+     * @return string
+     */
     public function packageName()
     {
         $content = file_get_contents($this->getPackageRoot() . DIRECTORY_SEPARATOR . 'composer.json');
@@ -185,13 +202,17 @@ trait PrinterTrait
 
         $this->printerOptions = array_merge($this->defaultConfigOptions, $this->printerOptions);
 
-        $this->hideClassName = $this->getConfigOption('cd-printer-hide-class');
-        $this->simpleOutput = $this->getConfigOption('cd-printer-simple-output');
-        $this->showConfig = $this->getConfigOption('cd-printer-show-config');
-        $this->hideNamespace = $this->getConfigOption('cd-printer-hide-namespace');
-        $this->anyBarEnabled = $this->getConfigOption('cd-printer-anybar');
-        $this->anyBarPort = $this->getConfigOption('cd-printer-anybar-port');
-        $this->maxClassNameLength = $this->getConfigOption('max-class-name-length');
+        $this->hideClassName       = $this->getConfigOption('cd-printer-hide-class');
+        $this->simpleOutput        = $this->getConfigOption('cd-printer-simple-output');
+        $this->showConfig          = $this->getConfigOption('cd-printer-show-config');
+        $this->hideNamespace       = $this->getConfigOption('cd-printer-hide-namespace');
+        $this->anyBarEnabled       = $this->getConfigOption('cd-printer-anybar');
+        $this->anyBarPort          = $this->getConfigOption('cd-printer-anybar-port');
+        $this->dontFormatClassName = $this->getConfigOption('cd-printer-dont-format-classname');
+
+        if (!strpos(php_uname(), 'Darwin')) {
+            $this->anyBarEnabled = false;
+        }
 
         $this->markers = [
             'pass' => $this->getConfigMarker('cd-pass'),
@@ -291,6 +312,11 @@ trait PrinterTrait
         if ($this->hideNamespace && strrpos($className, '\\')) {
             $className = substr($className, strrpos($className, '\\') + 1);
         }
+
+        if ($this->dontFormatClassName) {
+            return $prefix . $className . $suffix;
+        }
+
         $formattedClassName = $prefix . $className . $suffix;
 
         if (\strlen($formattedClassName) <= $this->maxClassNameLength) {
@@ -323,40 +349,40 @@ trait PrinterTrait
     {
         if ($this->column >= $this->maxNumberOfColumns) {
             $this->writeNewLine();
-            $padding = $this->maxClassNameLength;
+            $padding      = $this->maxClassNameLength;
             $this->column = $padding;
             echo str_pad(' ', $padding);
         }
         switch (strtoupper($buffer)) {
             case '.':
-                $color = 'fg-green';
+                $color  = 'fg-green';
                 $buffer = $this->simpleOutput ? '.' : $this->markers['pass']; // mb_convert_encoding("\x27\x13", 'UTF-8', 'UTF-16BE');
-                $buffer .= ( ! $this->debug) ? '' : ' Passed';
+                $buffer .= (!$this->debug) ? '' : ' Passed';
                 break;
             case 'S':
-                $color = 'fg-yellow,bold';
+                $color  = 'fg-yellow,bold';
                 $buffer = $this->simpleOutput ? 'S' : $this->markers['skipped']; // mb_convert_encoding("\x27\xA6", 'UTF-8', 'UTF-16BE');
-                $buffer .= ! $this->debug ? '' : ' Skipped';
+                $buffer .= !$this->debug ? '' : ' Skipped';
                 break;
             case 'I':
-                $color = 'fg-blue,bold';
+                $color  = 'fg-blue,bold';
                 $buffer = $this->simpleOutput ? 'I' : $this->markers['incomplete']; // 'ℹ';
-                $buffer .= ! $this->debug ? '' : ' Incomplete';
+                $buffer .= !$this->debug ? '' : ' Incomplete';
                 break;
             case 'F':
-                $color = 'fg-red,bold';
+                $color  = 'fg-red,bold';
                 $buffer = $this->simpleOutput ? 'F' : $this->markers['fail']; // mb_convert_encoding("\x27\x16", 'UTF-8', 'UTF-16BE');
-                $buffer .= ( ! $this->debug) ? '' : ' Fail';
+                $buffer .= (!$this->debug) ? '' : ' Fail';
                 break;
             case 'E':
-                $color = 'fg-red,bold';
+                $color  = 'fg-red,bold';
                 $buffer = $this->simpleOutput ? 'E' : $this->markers['error']; // '⚈';
-                $buffer .= ! $this->debug ? '' : ' Error';
+                $buffer .= !$this->debug ? '' : ' Error';
                 break;
             case 'R':
-                $color = 'fg-magenta,bold';
+                $color  = 'fg-magenta,bold';
                 $buffer = $this->simpleOutput ? 'R' : $this->markers['risky']; // '⚙';
-                $buffer .= ! $this->debug ? '' : ' Risky';
+                $buffer .= !$this->debug ? '' : ' Risky';
                 break;
         }
 

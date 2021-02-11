@@ -7,17 +7,15 @@ use PHPUnit\Framework\Test;
 use PHPUnit\Runner\Version;
 use Bakyt\Console\Phanybar;
 use PHPUnit\Framework\TestResult;
-use PHPUnit\TextUI\ResultPrinter;
+use PHPUnit\TextUI\DefaultResultPrinter;
 use PHPUnit\Framework\TestFailure;
 
-$low  = version_compare(Version::series(), '7.1', '>=');
+$low  = version_compare(Version::series(), '9.0', '>=');
 $high = true; // version_compare(Version::series(),'7.1.99','<=');
 
 if ($low && $high) {
-    class ResultPrinter71 extends ResultPrinter
+    class ResultPrinter90 extends DefaultResultPrinter
     {
-        use PrinterTrait;
-
         private $defectListPrinted = false;
 
         private $reverse = true;
@@ -98,8 +96,8 @@ if ($low && $high) {
             while ($exception) {
                 $this->write(
                     "\nCaused by\n" .
-                        TestFailure::exceptionToString($exception) . "\n" .
-                        Filter::getFilteredStacktrace($exception)
+                    TestFailure::exceptionToString($exception) . "\n" .
+                    Filter::getFilteredStacktrace($exception)
                 );
                 $exception = $exception->getPrevious();
             }

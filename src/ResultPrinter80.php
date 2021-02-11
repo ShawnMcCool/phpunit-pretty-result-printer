@@ -10,8 +10,8 @@ use PHPUnit\Framework\TestResult;
 use PHPUnit\TextUI\ResultPrinter;
 use PHPUnit\Framework\TestFailure;
 
-$low  = version_compare(Version::series(), '7.1', '>=');
-$high = true; // version_compare(Version::series(),'7.1.99','<=');
+$low  = version_compare(Version::series(), '8.0', '>=');
+$high = version_compare(Version::series(), '8.99.99', '<=');
 
 if ($low && $high) {
     class ResultPrinter80 extends ResultPrinter
@@ -83,7 +83,7 @@ if ($low && $high) {
             return "$exceptionMessage";
         }
 
-        protected function printDefectTrace(TestFailure $defect):void
+        protected function printDefectTrace(TestFailure $defect): void
         {
             $this->write($this->formatExceptionMsg($defect->getExceptionAsString()));
             $trace = Filter::getFilteredStacktrace(

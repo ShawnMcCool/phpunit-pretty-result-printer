@@ -35,15 +35,26 @@ $high = version_compare(Version::series(), '7.99.99', '<=');
 if ($low && $high) {
     class Printer extends ResultPrinter71
     {
-        use PrinterTrait;
+        // NOTE: Working on a fix for Issue 169
+        // use PrinterTrait;
     }
 }
 
 $low  = version_compare(Version::series(), '8.0', '>=');
-$high = true; // version_compare(Version::series(),'8.99.99','<=');
+$high = version_compare(Version::series(), '8.99.99', '<=');
 
 if ($low && $high) {
     class Printer extends ResultPrinter80
+    {
+        use PrinterTrait8;  // new trait introduced for PHP 8.x
+    }
+}
+
+$low  = version_compare(Version::series(), '9.0', '>=');
+$high = true; // version_compare(Version::series(),'8.99.99','<=');
+
+if ($low && $high) {
+    class Printer extends ResultPrinter90
     {
         use PrinterTrait8;  // new trait introduced for PHP 8.x
     }
